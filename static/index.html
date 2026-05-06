@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P vs NP vs Quantum: Interactive Simulation Lab</title>
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Grid -->
+    <div class="cyber-grid"></div>
+
+    <nav class="navbar glass">
+        <div class="logo">⚛️ QuantumLab <span class="version-tag">v2.0</span></div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#theory">Theory</a>
+            <a href="#simulation">Simulation</a>
+            <a href="#comparison">Comparison</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <h1 class="glitch-text" data-text="P vs NP vs Quantum">P vs NP vs Quantum</h1>
+            <h2>Interactive Simulation Lab</h2>
+            <p>Experience computational complexity visually. Discover why quantum speedup changes everything.</p>
+            <a href="#simulation" class="cta-button glow">Initialize Simulation</a>
+            <div class="hero-visual">
+                <div class="glow-orb classical"></div>
+                <div class="glow-orb np"></div>
+                <div class="glow-orb quantum"></div>
+            </div>
+        </section>
+
+        <!-- Theory Section -->
+        <section id="theory" class="theory-section">
+            <h2>The Core Concepts</h2>
+            <p class="section-subtitle">Click a card for deep dive</p>
+            <div class="card-grid">
+                <div class="theory-card classical-card glass hover-glow" onclick="openModal('modal-p')">
+                    <h3>P (Polynomial)</h3>
+                    <p>Linear Search: Scanning items one by one.</p>
+                    <div class="badge">O(n)</div>
+                </div>
+                <div class="theory-card np-card glass hover-glow" onclick="openModal('modal-np')">
+                    <h3>NP (Nondeterministic)</h3>
+                    <p>Brute-force: Checking all possibilities. Exponential explosion.</p>
+                    <div class="badge">O(2ⁿ)</div>
+                </div>
+                <div class="theory-card quantum-card glass hover-glow" onclick="openModal('modal-quantum')">
+                    <h3>Quantum (Grover's)</h3>
+                    <p>Superposition & Amplitude Amplification.</p>
+                    <div class="badge">O(√n)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Simulation Dashboard -->
+        <section id="simulation" class="simulation-section">
+            <div class="section-header">
+                <h2>Simulation Dashboard</h2>
+                <div class="status-indicator">
+                    <span class="pulse-dot"></span> System Online
+                </div>
+            </div>
+            
+            <div class="dashboard-container">
+                <!-- Input Panel -->
+                <div class="panel input-panel glass border-glow">
+                    <h3>Configuration</h3>
+                    
+                    <div class="control-group">
+                        <label for="inputSize">Input Size (n): <span id="sizeLabel" class="highlight-val">50</span></label>
+                        <input type="range" id="inputSize" min="10" max="500" value="50">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Target Index Position:</label>
+                        <div class="target-controls">
+                            <input type="number" id="customTarget" min="0" max="49" value="25" class="cyber-input">
+                            <button id="btnRandomizeTarget" class="btn secondary">Random</button>
+                        </div>
+                    </div>
+
+                    <div class="separator"></div>
+
+                    <h3>Execution Modes</h3>
+                    <div class="action-buttons">
+                        <div class="btn-group">
+                            <button id="btnRunClassical" class="btn run-classical">▶ Run Classical</button>
+                            <button id="btnStepClassical" class="btn run-classical step-btn">⏭ Step</button>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button id="btnRunNP" class="btn run-np">▶ Run NP</button>
+                            <button id="btnStepNP" class="btn run-np step-btn">⏭ Step</button>
+                        </div>
+                        
+                        <button id="btnRunQuantum" class="btn run-quantum">▶ Run Quantum</button>
+                    </div>
+                </div>
+
+                <!-- Visualization Panel -->
+                <div class="panel viz-panel glass border-glow">
+                    <h3>Array Memory View</h3>
+                    <div id="quantumCircuitOverlay" class="circuit-overlay hidden">
+                        <!-- SVG representation of a quantum circuit -->
+                        <div class="circuit-anim">
+                            <div class="wire"><span>H</span></div>
+                            <div class="wire"><span>Oracle</span></div>
+                            <div class="wire"><span>Diffuser</span></div>
+                        </div>
+                    </div>
+                    <div id="arrayContainer" class="array-container cyber-box">
+                        <!-- Array boxes will be injected here via JS -->
+                    </div>
+                    <div id="statusMessage" class="status-message cyber-text">Awaiting input...</div>
+                </div>
+
+                <!-- Output Metrics Panel -->
+                <div class="panel metrics-panel glass border-glow">
+                    <h3>Telemetry</h3>
+                    <div class="metric-group classical-metric">
+                        <h4>Classical</h4>
+                        <div class="metric-row"><span>Time:</span> <span id="metricClassTime" class="val">0.00 ms</span></div>
+                        <div class="metric-row"><span>Comparisons:</span> <span id="metricClassComps" class="val">0</span></div>
+                        <div class="progress-bar"><div id="progClassical" class="progress fill-classical"></div></div>
+                    </div>
+                    
+                    <div class="metric-group np-metric">
+                        <h4>NP (Simulation)</h4>
+                        <div class="metric-row"><span>Paths Explored:</span> <span id="metricNpChecks" class="val glitch-val">0</span></div>
+                        <div class="metric-row"><span>Complexity:</span> <span class="val">O(2ⁿ)</span></div>
+                        <div class="progress-bar"><div id="progNp" class="progress fill-np"></div></div>
+                    </div>
+                    
+                    <div class="metric-group quantum-metric">
+                        <h4>Quantum</h4>
+                        <div class="metric-row"><span>Iterations:</span> <span id="metricQuantIters" class="val">0</span></div>
+                        <div class="metric-row"><span>Probability:</span> <span class="val">99.9%</span></div>
+                        <div class="progress-bar"><div id="progQuantum" class="progress fill-quantum"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Dashboard -->
+        <section id="comparison" class="comparison-section">
+            <h2>Analytical Comparison</h2>
+            
+            <div class="comparison-container">
+                <div class="chart-wrapper glass border-glow">
+                    <canvas id="complexityChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modals -->
+    <div id="modal-p" class="modal">
+        <div class="modal-content glass">
+            <span class="close" onclick="closeModals()">&times;</span>
+            <h2>P (Polynomial Time)</h2>
+            <p><strong>Analogy:</strong> Looking for a specific page number in a book by flipping through it one by one.</p>
+            <p>Problems that can be solved in polynomial time. For searching an unsorted array, the worst-case is `O(n)`. The time it takes grows linearly with the size of the input.</p>
+            <pre><code>def classical_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target: return i
+    return -1</code></pre>
+        </div>
+    </div>
+
+    <div id="modal-np" class="modal">
+        <div class="modal-content glass">
+            <span class="close" onclick="closeModals()">&times;</span>
+            <h2>NP (Nondeterministic Polynomial)</h2>
+            <p><strong>Analogy:</strong> Trying to crack a combination lock. Easy to check if a combination is right, but finding it by trying all combinations takes forever.</p>
+            <p>NP problems are verifiable in polynomial time, but solving them brute-force requires exploring a massive decision tree `O(2^n)`. As `n` grows, it becomes computationally impossible.</p>
+        </div>
+    </div>
+
+    <div id="modal-quantum" class="modal">
+        <div class="modal-content glass">
+            <span class="close" onclick="closeModals()">&times;</span>
+            <h2>Quantum (Grover's Algorithm)</h2>
+            <p><strong>Analogy:</strong> Having a magic tuning fork that resonates only with the right page in the book, allowing you to skip most of the flipping.</p>
+            <p>Grover's algorithm uses quantum superposition to evaluate all entries simultaneously and amplitude amplification to make the correct answer the most probable result. It provides a quadratic speedup `O(√n)`.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
